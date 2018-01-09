@@ -16,3 +16,6 @@ build:
 
 before_build:
   - nuget restore
+
+test_script:
+  - cmd: vstest.console ItcLabAnalyzer\ItcLabAnalyzer.Test\bin\%CONFIGURATION%\netcoreapp2.0\ItcLabAnalyzer.Test.dll
