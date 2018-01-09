@@ -13,3 +13,6 @@ platform: Any CPU
 
 build:
   verbosity: minimal
+
+before_build:
+  - nuget restore
