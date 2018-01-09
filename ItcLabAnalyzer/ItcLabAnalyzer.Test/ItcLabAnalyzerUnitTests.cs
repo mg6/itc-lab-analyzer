@@ -11,7 +11,6 @@ namespace ItcLabAnalyzer.Test
     [TestClass]
     public class UnitTest : CodeFixVerifier
     {
-
         //No diagnostics expected to show up
         [TestMethod]
         public void TestMethod1()
