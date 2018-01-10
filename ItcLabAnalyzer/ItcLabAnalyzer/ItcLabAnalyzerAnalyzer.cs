@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -28,10 +29,18 @@ namespace ItcLabAnalyzer
 
         public override void Initialize(AnalysisContext context)
         {
+            context.RegisterSyntaxNodeAction(AnalyzeStringPath, SyntaxKind.StringLiteralExpression);
         }
 
-        private static void AnalyzeSymbol(SymbolAnalysisContext context)
+        private void AnalyzeStringPath(SyntaxNodeAnalysisContext context)
         {
+            var checkString = (LiteralExpressionSyntax)context.Node;
+            if (Regex.Match(checkString.Token.Text, "\\\\").Success || (checkString.Token.Text.Contains("@\"") && checkString.Token.Text.Contains('\\')))
+            {
+                var diagnostic = Diagnostic.Create(Rule, checkString.GetLocation(), checkString);
+                context.ReportDiagnostic(diagnostic);
+            }
         }
+
     }
 }
