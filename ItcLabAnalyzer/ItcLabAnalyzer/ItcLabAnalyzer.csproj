@@ -20,6 +20,9 @@
     <Copyright>Copyright</Copyright>
     <PackageTags>ItcLabAnalyzer, analyzers</PackageTags>
     <NoPackageAnalysis>true</NoPackageAnalysis>
+    <ApplicationIcon />
+    <OutputType>Library</OutputType>
+    <StartupObject />
   </PropertyGroup>
    
   <ItemGroup>
