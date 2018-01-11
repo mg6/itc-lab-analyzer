@@ -16,8 +16,6 @@ namespace ItcLabAnalyzer
     {
         private PathCombineAnalyzer CombineAnalyzer = new PathCombineAnalyzer();
 
-        public const string DiagnosticId = "ItcLabAnalyzer";
-
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
         {
             get
