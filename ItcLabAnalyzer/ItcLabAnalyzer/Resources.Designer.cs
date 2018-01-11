@@ -64,7 +64,7 @@ namespace ItcLabAnalyzer {
         /// <summary>
         ///   Looks up a localized string similar to Paths should be created by Patch.Combine..
         /// </summary>
-        internal static string AnalyzerDescription {
+        internal static string PathCombineAnalyzerDescription {
             get {
                 return ResourceManager.GetString("AnalyzerDescription", resourceCulture);
             }
@@ -73,7 +73,7 @@ namespace ItcLabAnalyzer {
         /// <summary>
         ///   Looks up a localized string similar to Path &apos;{0}&apos; should be created by Path.Combine..
         /// </summary>
-        internal static string AnalyzerMessageFormat {
+        internal static string PathCombineAnalyzerMessageFormat {
             get {
                 return ResourceManager.GetString("AnalyzerMessageFormat", resourceCulture);
             }
@@ -82,7 +82,7 @@ namespace ItcLabAnalyzer {
         /// <summary>
         ///   Looks up a localized string similar to Creation of the path localized..
         /// </summary>
-        internal static string AnalyzerTitle {
+        internal static string PathCombineAnalyzerTitle {
             get {
                 return ResourceManager.GetString("AnalyzerTitle", resourceCulture);
             }
