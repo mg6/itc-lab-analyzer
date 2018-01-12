@@ -12,7 +12,7 @@ namespace ItcLabAnalyzer.Test
     public class DisposablesTests : CodeFixVerifier
     {
         [TestMethod]
-        public void TestRewritesWithUsing()
+        public void TestRewritesVariableDeclarationWithUsing()
         {
             var testCode = @"
 using System;
@@ -55,6 +55,61 @@ namespace ConsoleApp1
         void Foo()
         {
             using (var m = new MemoryStream())
+            {
+                // other statements
+            }
+        }
+    }
+}
+";
+
+            VerifyCSharpFix(testCode, expectedCode);
+        }
+
+        [TestMethod]
+        public void TestRewritesExpressionWithUsing()
+        {
+            var testCode = @"
+using System;
+using System.IO;
+
+namespace ConsoleApp1
+{
+    class DisposableTest
+    {
+        void Foo()
+        {
+            new MemoryStream();
+            // other statements
+        }
+    }
+}
+";
+
+            var expectedDiagnostic = new DiagnosticResult
+            {
+                Id = "DisposablesAnalyzer",
+                Message = "Missing call to Dispose()",
+                Severity = DiagnosticSeverity.Warning,
+                Locations =
+                    new[] {
+                            new DiagnosticResultLocation("Test0.cs", 11, 13)
+                        }
+            };
+
+            VerifyCSharpDiagnostic(testCode, expectedDiagnostic);
+
+            var expectedCode = @"
+using System;
+using System.IO;
+
+namespace ConsoleApp1
+{
+    class DisposableTest
+    {
+        void Foo()
+        {
+            using (var disposable = new MemoryStream())
             {
                 // other statements
             }

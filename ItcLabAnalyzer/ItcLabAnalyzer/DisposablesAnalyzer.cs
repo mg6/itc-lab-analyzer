@@ -27,6 +27,15 @@ namespace ItcLabAnalyzer
             var expression = context.Node as ObjectCreationExpressionSyntax;
 
             var declarator = expression.Parent.Parent as VariableDeclaratorSyntax;
+
+            if (declarator == null)
+            {
+                // no enclosing declarator => missing dispose
+                var diagnostic = Diagnostic.Create(Rule, context.Node.GetLocation(), context.Node);
+                context.ReportDiagnostic(diagnostic);
+                return;
+            }
+
             var identifier = declarator.Identifier;
 
             var classType = context.SemanticModel.GetTypeInfo(expression).ConvertedType;
