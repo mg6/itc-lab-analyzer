@@ -87,5 +87,32 @@ namespace ItcLabAnalyzer {
                 return ResourceManager.GetString("AnalyzerTitle", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Consider using a using block to automatically dispose IDisposable objects.
+        /// </summary>
+        internal static string DisposablesAnalyzerDescription {
+            get {
+                return ResourceManager.GetString("DisposablesAnalyzerDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Missing call to Dispose().
+        /// </summary>
+        internal static string DisposablesAnalyzerMessageFormat {
+            get {
+                return ResourceManager.GetString("DisposablesAnalyzerMessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Disposable Analyzer.
+        /// </summary>
+        internal static string DisposablesAnalyzerTitle {
+            get {
+                return ResourceManager.GetString("DisposablesAnalyzerTitle", resourceCulture);
+            }
+        }
     }
 }
