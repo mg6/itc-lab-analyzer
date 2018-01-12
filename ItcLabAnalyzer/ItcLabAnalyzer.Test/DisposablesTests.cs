@@ -65,6 +65,64 @@ namespace ConsoleApp1
         }
 
         [TestMethod]
+        public void TestRewritesVariableDeclarationOutOfManyWithUsing()
+        {
+            var testCode = @"
+using System;
+using System.IO;
+
+namespace ConsoleApp1
+{
+    class DisposableTest
+    {
+        void Foo()
+        {
+            var m = new MemoryStream();
+            var n = new MemoryStream();
+            m.Dispose();
+        }
+    }
+}
+";
+
+            var expectedDiagnostic = new DiagnosticResult
+            {
+                Id = "DisposablesAnalyzer",
+                Message = "Missing call to Dispose()",
+                Severity = DiagnosticSeverity.Warning,
+                Locations =
+                    new[] {
+                            new DiagnosticResultLocation("Test0.cs", 12, 21)
+                        }
+            };
+
+            VerifyCSharpDiagnostic(testCode, expectedDiagnostic);
+
+            var expectedCode = @"
+using System;
+using System.IO;
+
+namespace ConsoleApp1
+{
+    class DisposableTest
+    {
+        void Foo()
+        {
+            var m = new MemoryStream();
+            using (var n = new MemoryStream())
+            {
+            }
+
+            m.Dispose();
+        }
+    }
+}
+";
+
+            VerifyCSharpFix(testCode, expectedCode);
+        }
+
+        [TestMethod]
         public void TestRewritesExpressionWithUsing()
         {
             var testCode = @"
