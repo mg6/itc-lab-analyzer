@@ -15,19 +15,21 @@ namespace ItcLabAnalyzer
     public class ItcLabAnalyzerAnalyzer : DiagnosticAnalyzer
     {
         private PathCombineAnalyzer CombineAnalyzer = new PathCombineAnalyzer();
-
+        private VariableDefinitionAnalyzer VariableAnalyzer = new VariableDefinitionAnalyzer();
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
         {
             get
             {
                 return ImmutableArray.Create(
-                    PathCombineAnalyzer.Rule);
+                    PathCombineAnalyzer.Rule,
+                    VariableDefinitionAnalyzer.Rule);
             }
         }
 
         public override void Initialize(AnalysisContext context)
         {
             context.RegisterSyntaxNodeAction(CombineAnalyzer.AnalyzeStringPath, SyntaxKind.StringLiteralExpression);
+            context.RegisterSyntaxNodeAction(VariableAnalyzer.AnalyzeVariableDefinition, SyntaxKind.VariableDeclarator);
         }
     }
 }
