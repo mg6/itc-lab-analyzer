@@ -14,6 +14,7 @@ using Microsoft.CodeAnalysis.Rename;
 using Microsoft.CodeAnalysis.Text;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis.Semantics;
+using Microsoft.CodeAnalysis.Formatting;
 
 namespace ItcLabAnalyzer
 {
@@ -24,7 +25,7 @@ namespace ItcLabAnalyzer
         public async Task<Document> SeparateVariablesAsync(Document document, VariableDeclaratorSyntax name, CancellationToken cancellationToken)
         {
             var syntaxTree = await document.GetSyntaxTreeAsync(cancellationToken);
-            var newIdenfiter = "";
+            var newIdenfiter = name.Identifier.Text;
             string nameString = name.Identifier.Text;
 
             var regexList = new List<string>();
@@ -33,34 +34,26 @@ namespace ItcLabAnalyzer
             if (nameString.Contains("_"))
             {
                 regex = new Regex("[^_]+");
-                regexList = (from Match m in regex.Matches(nameString) select m.Value).ToList();
-
-                foreach (var n in regexList)
-                {
-                    newIdenfiter += n[0];
-                }
+                regexList = (from Match m in regex.Matches(nameString)
+                             select (int.TryParse(m.Value, out var _) ? m.Value : m.Value.Substring(0, 1))).ToList();
+                newIdenfiter = String.Join("", regexList);
             }
             else if (Regex.Match(nameString, "[A-Z]").Success)
             {
                 regex = new Regex("[A-Z0-9]");
                 regexList = (from Match m in regex.Matches(nameString) select m.Value).ToList();
-
-                foreach (var n in regexList)
-                {
-                    newIdenfiter += n;
-                }
+                newIdenfiter = String.Join("", regexList);
             }
-            else
-                newIdenfiter = name.Identifier.Text;
 
-            var updatedSyntaxTree =
-        syntaxTree.GetRoot().ReplaceNode(name,
-            name.WithIdentifier(SyntaxFactory.ParseToken(newIdenfiter.ToLower())));
-            
+            var oldRoot = syntaxTree.GetRoot();
+            var newName = name.WithIdentifier(SyntaxFactory.ParseToken(newIdenfiter.ToLower()))
+                    .WithLeadingTrivia(name.GetLeadingTrivia())
+                    .WithTrailingTrivia(name.GetTrailingTrivia())
+                    .WithAdditionalAnnotations(Formatter.Annotation);
+            var newRoot = oldRoot.ReplaceNode(name, newName);
 
-            
-            return document.WithSyntaxRoot(updatedSyntaxTree);
-            
+            return document.WithSyntaxRoot(newRoot);
+
         }
     }
 }

@@ -139,7 +139,8 @@ namespace ItcLabAnalyzer.Test
         {           
             void Method() 
             {
-                int bbdntj;
+                int bb22dntj33;
+                int bb4ntj;
             }
         }
     }
