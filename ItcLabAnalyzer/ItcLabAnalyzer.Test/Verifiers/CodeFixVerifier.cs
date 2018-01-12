@@ -4,8 +4,10 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 
 namespace TestHelper
@@ -73,11 +75,14 @@ namespace TestHelper
         /// <param name="allowNewCompilerDiagnostics">A bool controlling whether or not the test will fail if the CodeFix introduces other warnings after being applied</param>
         private void VerifyFix(string language, DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, string oldSource, string newSource, int? codeFixIndex, bool allowNewCompilerDiagnostics)
         {
+            oldSource = NormalizeEndings(oldSource);
+            newSource = NormalizeEndings(newSource);
+
             var document = CreateDocument(oldSource, language);
             var analyzerDiagnostics = GetSortedDiagnosticsFromDocuments(analyzer, new[] { document });
             var compilerDiagnostics = GetCompilerDiagnostics(document);
             var attempts = analyzerDiagnostics.Length;
-            
+
             for (int i = 0; i < attempts; ++i)
             {
                 var actions = new List<CodeAction>();
@@ -121,8 +126,13 @@ namespace TestHelper
             }
 
             //after applying all of the code fixes, compare the resulting string to the inputted one
-            var actual = GetStringFromDocument(document);
+            var actual = NormalizeEndings(GetStringFromDocument(document));
             Assert.AreEqual(newSource, actual);
+        }
+
+        private string NormalizeEndings(string inputString)
+        {
+            return Regex.Replace(inputString, @"\r\n|\n\r|\n|\r", "\r\n");
         }
     }
 }
