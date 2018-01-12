@@ -14,6 +14,7 @@ using Microsoft.CodeAnalysis.Rename;
 using Microsoft.CodeAnalysis.Text;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis.Semantics;
+using Microsoft.CodeAnalysis.Formatting;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace ItcLabAnalyzer
@@ -58,7 +59,9 @@ namespace ItcLabAnalyzer
             var newStatements = enclosingBlock.Statements
                 .Replace(enclosingStatement, usingStatement);
 
-            var newBlock = enclosingBlock.WithStatements(newStatements);
+            var newBlock = enclosingBlock
+                .WithStatements(newStatements)
+                .WithAdditionalAnnotations(Formatter.Annotation);
 
             var oldRoot = syntaxTree.GetRoot();
             var newRoot = oldRoot.ReplaceNode(enclosingBlock, newBlock);
