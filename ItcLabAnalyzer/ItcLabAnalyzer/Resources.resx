@@ -129,4 +129,13 @@
     <value>Creation of the path localized.</value>
     <comment>The title of the diagnostic.</comment>
   </data>
+  <data name="DisposablesAnalyzerDescription" xml:space="preserve">
+    <value>Consider using a using block to automatically dispose IDisposable objects</value>
+  </data>
+  <data name="DisposablesAnalyzerMessageFormat" xml:space="preserve">
+    <value>Missing call to Dispose()</value>
+  </data>
+  <data name="DisposablesAnalyzerTitle" xml:space="preserve">
+    <value>Disposable Analyzer</value>
+  </data>
 </root>
