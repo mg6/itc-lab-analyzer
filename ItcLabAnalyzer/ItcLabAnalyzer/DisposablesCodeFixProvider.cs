@@ -14,14 +14,56 @@ using Microsoft.CodeAnalysis.Rename;
 using Microsoft.CodeAnalysis.Text;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis.Semantics;
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace ItcLabAnalyzer
 {
     public class DisposablesCodeFixProvider
     {
-        public async Task<Document> MakeDisposablesAsync(Document document, LiteralExpressionSyntax litExp, CancellationToken cancellationToken)
+        public static readonly string DiagnosticId = "DisposablesAnalyzer";
+        public static readonly string Title = "Disposable Analyzer";
+
+        public async Task<Document> MakeDisposablesAsync(Document document, ObjectCreationExpressionSyntax expression, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var syntaxTree = await document.GetSyntaxTreeAsync(cancellationToken);
+
+            var enclosingDeclaration = expression.FirstAncestorOrSelf<VariableDeclarationSyntax>();
+            var enclosingStatement = expression.FirstAncestorOrSelf<StatementSyntax>();
+            var enclosingBlock = expression.FirstAncestorOrSelf<BlockSyntax>();
+
+            if (enclosingBlock == null)
+            {
+                return document;
+            }
+
+            var newDeclaration = enclosingDeclaration;
+            if (enclosingDeclaration == null)
+            {
+                // Thank God there exists https://github.com/KirillOsenkov/RoslynQuoter !!
+                newDeclaration =
+                    VariableDeclaration(
+                        IdentifierName("var"))
+                    .WithVariables(
+                        SingletonSeparatedList<VariableDeclaratorSyntax>(
+                            VariableDeclarator(
+                                Identifier("disposable"))
+                            .WithInitializer(
+                                EqualsValueClause(
+                                    expression))));
+            }
+
+            var usingStatement = UsingStatement(Block())
+                .WithDeclaration(newDeclaration);
+
+            var newStatements = enclosingBlock.Statements
+                .Replace(enclosingStatement, usingStatement);
+
+            var newBlock = enclosingBlock.WithStatements(newStatements);
+
+            var oldRoot = syntaxTree.GetRoot();
+            var newRoot = oldRoot.ReplaceNode(enclosingBlock, newBlock);
+
+            return document.WithSyntaxRoot(newRoot);
         }
     }
 }

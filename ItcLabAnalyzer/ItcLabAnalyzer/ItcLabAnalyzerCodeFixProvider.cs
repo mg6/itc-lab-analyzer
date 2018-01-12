@@ -22,12 +22,14 @@ namespace ItcLabAnalyzer
     {
         private PathCombineCodeFixProvider PathCombineCodeFixProvider = new PathCombineCodeFixProvider();
         private VariableDefinitionCodeFixProvider VariableDefinitionCodeFixProvider = new VariableDefinitionCodeFixProvider();
+        private DisposablesCodeFixProvider DisposablesCodeFixProvider = new DisposablesCodeFixProvider();
 
         public sealed override ImmutableArray<string> FixableDiagnosticIds
         {
             get
             {
                 return ImmutableArray.Create(
+                    DisposablesCodeFixProvider.DiagnosticId,
                     PathCombineAnalyzer.DiagnosticId,
                     VariableDefinitionAnalyzer.DiagnosticId);
             }
@@ -48,6 +50,14 @@ namespace ItcLabAnalyzer
 
                 switch (diagnostic.Id)
                 {
+                    case DisposablesAnalyzer.DiagnosticId:
+                        var disposExpr = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ObjectCreationExpressionSyntax>().First();
+                        context.RegisterCodeFix(
+                            CodeAction.Create(DisposablesCodeFixProvider.Title,
+                                c => DisposablesCodeFixProvider.MakeDisposablesAsync(context.Document, disposExpr, c),
+                                equivalenceKey: DisposablesCodeFixProvider.Title),
+                            diagnostic);
+                        break;
                     case PathCombineAnalyzer.DiagnosticId:
                         var exprDec = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<LiteralExpressionSyntax>().First();
                         context.RegisterCodeFix(

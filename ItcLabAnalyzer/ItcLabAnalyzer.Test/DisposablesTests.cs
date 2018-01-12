@@ -25,7 +25,6 @@ namespace ConsoleApp1
         void Foo()
         {
             var m = new MemoryStream();
-            // other statements
         }
     }
 }
@@ -56,7 +55,6 @@ namespace ConsoleApp1
         {
             using (var m = new MemoryStream())
             {
-                // other statements
             }
         }
     }
@@ -80,7 +78,6 @@ namespace ConsoleApp1
         void Foo()
         {
             new MemoryStream();
-            // other statements
         }
     }
 }
@@ -111,7 +108,6 @@ namespace ConsoleApp1
         {
             using (var disposable = new MemoryStream())
             {
-                // other statements
             }
         }
     }
